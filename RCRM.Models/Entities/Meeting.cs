@@ -1,0 +1,3 @@
+﻿namespace Jupiter.Models.Entities
+{
+}
