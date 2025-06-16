@@ -3,27 +3,27 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jupiter.API", "RCRM\Jupiter.API.csproj", "{C14AAC30-4EE1-49CA-9F7D-C79DDADAC288}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jupiter.API", "Jupiter\Jupiter.API.csproj", "{C14AAC30-4EE1-49CA-9F7D-C79DDADAC288}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jupiter.DAL", "RCRM.DLL\Jupiter.DAL.csproj", "{F13C8923-C604-4E3E-B8B7-9B55B259146A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jupiter.DAL", "Jupiter.DLL\Jupiter.DAL.csproj", "{F13C8923-C604-4E3E-B8B7-9B55B259146A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jupiter.BLL", "RCRM.BLL\Jupiter.BLL.csproj", "{B8951D3F-3A6A-4EC8-BBDC-422D3C1FC1C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jupiter.BLL", "Jupiter.BLL\Jupiter.BLL.csproj", "{B8951D3F-3A6A-4EC8-BBDC-422D3C1FC1C7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jupiter.Helpers", "Utilities\Jupiter.Helpers.csproj", "{5B371FBC-5B7F-43AC-B103-1CF257A8511C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jupiter.Models", "RCRM.Models\Jupiter.Models.csproj", "{33F794EA-A879-4487-9A4E-28E22E3C3ED5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jupiter.Models", "Jupiter.Models\Jupiter.Models.csproj", "{33F794EA-A879-4487-9A4E-28E22E3C3ED5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jupiter.Extensions", "RCRM.ExtensionMethods\Jupiter.Extensions.csproj", "{EC59A262-DAB6-4A5F-8CCF-4B072FA65797}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jupiter.Extensions", "Jupiter.ExtensionMethods\Jupiter.Extensions.csproj", "{EC59A262-DAB6-4A5F-8CCF-4B072FA65797}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jupiter.Middleware", "RCRM.Middleware\Jupiter.Middleware.csproj", "{79EAB32C-F213-4664-ADF5-1769D23FC8B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jupiter.Middleware", "Jupiter.Middleware\Jupiter.Middleware.csproj", "{79EAB32C-F213-4664-ADF5-1769D23FC8B6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jupiter.Enumerations", "RCRM.Enumerations\Jupiter.Enumerations.csproj", "{6017AA88-5E5D-40E4-B75A-AFFD478F73A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jupiter.Enumerations", "Jupiter.Enumerations\Jupiter.Enumerations.csproj", "{6017AA88-5E5D-40E4-B75A-AFFD478F73A4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jupiter.Security", "RCRM.Security\Jupiter.Security.csproj", "{5135AF76-18E9-4D95-83AC-44B49FD8FF4E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jupiter.Security", "Jupiter.Security\Jupiter.Security.csproj", "{5135AF76-18E9-4D95-83AC-44B49FD8FF4E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DistributedSystems", "DistributedSystems", "{79478B36-24AE-4D0B-A6CF-BDEBA4DFAC20}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jupiter.Integrations", "RCRM.Integrations\Jupiter.Integrations.csproj", "{CD219B94-FD80-420E-AABF-09C5D4E4F640}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jupiter.Integrations", "Jupiter.Integrations\Jupiter.Integrations.csproj", "{CD219B94-FD80-420E-AABF-09C5D4E4F640}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

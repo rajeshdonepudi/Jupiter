@@ -42,15 +42,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RCRM.BLL\RCRM.BLL.csproj" />
-    <ProjectReference Include="..\RCRM.Enumerations\RCRM.Enumerations.csproj" />
-    <ProjectReference Include="..\RCRM.ExtensionMethods\RCRM.Extensions.csproj" />
-    <ProjectReference Include="..\RCRM.Integrations\RCRM.Integrations.csproj" />
-    <ProjectReference Include="..\RCRM.Middleware\Jupiter.Middleware.csproj" />
-    <ProjectReference Include="..\RCRM.Middleware\RCRM.Middleware.csproj" />
-    <ProjectReference Include="..\RCRM.Models\RCRM.Models.csproj" />
-    <ProjectReference Include="..\RCRM.Security\RCRM.Security.csproj" />
-    <ProjectReference Include="..\Utilities\RCRM.Helpers.csproj" />
+    <ProjectReference Include="..\Jupiter.BLL\Jupiter.BLL.csproj" />
+    <ProjectReference Include="..\Jupiter.Enumerations\Jupiter.Enumerations.csproj" />
+    <ProjectReference Include="..\Jupiter.ExtensionMethods\Jupiter.Extensions.csproj" />
+    <ProjectReference Include="..\Jupiter.Integrations\Jupiter.Integrations.csproj" />
+    <ProjectReference Include="..\Jupiter.Middleware\Jupiter.Middleware.csproj" />
+    <ProjectReference Include="..\Jupiter.Middleware\Jupiter.Middleware.csproj" />
+    <ProjectReference Include="..\Jupiter.Models\Jupiter.Models.csproj" />
+    <ProjectReference Include="..\Jupiter.Security\Jupiter.Security.csproj" />
+    <ProjectReference Include="..\Utilities\Jupiter.Helpers.csproj" />
   </ItemGroup>
 
 </Project>

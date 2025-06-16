@@ -10,7 +10,7 @@ namespace Jupiter.API.Config
             {
                 options.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "RCRM 🤖",
+                    Title = "Jupiter 🚗",
                     Version = "v1"
                 });
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
