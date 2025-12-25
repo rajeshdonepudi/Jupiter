@@ -99,7 +99,11 @@ export const userAPI = createApi({
         method: "POST",
         body: payload,
       }),
-      invalidatesTags: ["site-primary-theme", userTags.userDetails],
+      invalidatesTags: [
+        "site-primary-theme",
+        userTags.userDetails,
+        userTags.userProfileInfo,
+      ],
     }),
   }),
 });

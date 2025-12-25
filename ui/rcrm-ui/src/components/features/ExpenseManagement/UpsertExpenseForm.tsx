@@ -44,7 +44,7 @@ const UpsertExpenseForm = (props: any) => {
       description: "",
       type: ExpenseTypeEnum.Miscellaneous,
       categoryId: null,
-      expenseDate: undefined,
+      expenseDate: null,
     },
     validationSchema: AddExpenseValidationScheme,
     onSubmit: (values: AddExpense | UpdateExpense, hel) => {
@@ -161,10 +161,11 @@ const UpsertExpenseForm = (props: any) => {
             </Grid>
             <Grid size={{ xs: 12, md: 12 }}>
               <DatePicker
+                name="expenseDate"
                 sx={{ width: "100%" }}
-                label="Controlled picker"
-                value={formik.values.expenseDate as any}
-                onChange={formik.handleChange}
+                label="Expense Date"
+                value={formik.values.expenseDate}
+                onChange={(value) => formik.setFieldValue("expenseDate", value)}
               />
             </Grid>
           </Grid>

@@ -18,13 +18,11 @@ import { siteThemesAPI } from "@/services/Theme/ThemeService";
 import { landingPageAPI } from "@/services/Public/LandingPageService";
 import { logsAPI } from "@/services/SystemLogs/LogsService";
 import { tenantsAPI } from "@/services/Tenant/TenantService";
-import { mailsAPI } from "@/services/Mail/MailService";
 import { userAPI } from "@/services/User/UserService";
 import { permissionsAPI } from "@/services/Security/PermissionService";
 import { securityGroupsAPI } from "@/services/Security/SecurityGroupService";
 import { domainServiceAPI } from "@/services/Domain/DomainService";
 import { questionsAPI } from "@/services/QuestionsAndAnswers/QuestionService";
-import { mailReaderAPI } from "@/services/Mail/MailReaderService";
 import { expenseServiceAPI } from "@/services/ExpenseManagement/ExpenseService";
 import { expenseCategoryServiceAPI } from "@/services/ExpenseManagement/ExpenseCategoryService";
 
@@ -51,14 +49,12 @@ export const store = configureStore({
       .concat(landingPageAPI.middleware)
       .concat(tenantsAPI.middleware)
       .concat(logsAPI.middleware)
-      .concat(mailsAPI.middleware)
       .concat(userAPI.middleware)
       .concat(permissionsAPI.middleware)
       .concat(securityGroupsAPI.middleware)
       .concat(rolesAPI.middleware)
       .concat(domainServiceAPI.middleware)
       .concat(questionsAPI.middleware)
-      .concat(mailReaderAPI.middleware)
       .concat(expenseServiceAPI.middleware)
       .concat(expenseCategoryServiceAPI.middleware),
   devTools: true,

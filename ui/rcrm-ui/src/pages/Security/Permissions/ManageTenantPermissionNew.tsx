@@ -31,6 +31,7 @@ import { AssignOrUnassignPermissionForTenantModel } from "@/models/Security/Perm
 import { AppModalState } from "@/models/Common/ModalState";
 import { PermissionsActions } from "@/enumerations/Security/Permissions/permissions-actions.enum";
 import {
+  useGetAllPermissionsQuery,
   useGetAllTenantPermissionsQuery,
   useManagePermissionsForTenantMutation,
 } from "@/services/Security/PermissionService";
@@ -64,8 +65,7 @@ export default function ManageTenantPermissionsNew() {
   });
 
   const [manageTenantPermissions] = useManagePermissionsForTenantMutation();
-  const { data: permissionsData, isLoading } =
-    useGetAllTenantPermissionsQuery(null);
+  const { data: permissionsData, isLoading } = useGetAllPermissionsQuery(null);
 
   /** Toggle individual permission */
   const handleToggle = (

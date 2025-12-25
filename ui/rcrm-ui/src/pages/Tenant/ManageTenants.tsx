@@ -29,6 +29,7 @@ import AppDataGrid from "@/components/ui-components/AppDataGrid";
 import { TenantBulkAction } from "@/enumerations/Tenant/tenant-bulk-action.enum";
 import AppLoader from "@/components/ui-components/AppLoader";
 import AppModal from "@/components/ui-components/AppModal";
+import PeopleIcon from "@mui/icons-material/People";
 import { AppModalState } from "@/models/Common/ModalState";
 import { TenantActions } from "@/enumerations/Tenant/tenant-actions.enum";
 import UpsertTenantForm from "@/components/features/Tenant/UpsertTenantForm";
@@ -39,8 +40,10 @@ import { toast } from "react-toastify";
 import NavUtilities from "@/utilities/NavUtilities";
 import { useNavigate } from "react-router-dom";
 import AppPage from "@/components/ui-components/AppPage";
+import BusinessIcon from "@mui/icons-material/Business";
 import Grid from "@mui/material/Grid2";
 import AppPaper from "@/components/ui-components/AppPaper";
+import AppMetricCard from "@/components/ui-components/AppMetricCard";
 
 const DeleteOutlineOutlinedIcon = lazy(
   () => import("@mui/icons-material/DeleteOutlineOutlined")
@@ -347,38 +350,24 @@ const ManageTenants = () => {
             <Grid size={12}>
               <Grid container spacing={0.8}>
                 <Grid size={3}>
-                  <AppPaper>
-                    <CardContent>
-                      <Typography variant="caption" color="text.secondary">
-                        {isMetricsLoading ? <Skeleton /> : "Total Tenants"}
-                      </Typography>
-                      <Typography variant="h5">
-                        {isMetricsLoading ? (
-                          <Skeleton />
-                        ) : (
-                          (dashboardInfo?.data?.totalTenantsInSystem ?? 0)
-                        )}
-                      </Typography>
-                    </CardContent>
-                  </AppPaper>
+                  <AppMetricCard
+                    icon={BusinessIcon}
+                    color="#1679AB"
+                    count={dashboardInfo?.data?.totalTenantsInSystem ?? 0}
+                    title="Total Tenants"
+                    loading={isMetricsLoading}
+                  />
                 </Grid>
                 <Grid size={{ md: 3 }}>
-                  <AppPaper>
-                    <CardContent>
-                      <Typography variant="caption" color="text.secondary">
-                        {isMetricsLoading ? <Skeleton /> : "Total Users"}
-                      </Typography>
-                      <Typography variant="h5">
-                        {isMetricsLoading ? (
-                          <Skeleton />
-                        ) : (
-                          DisplayUtilities.formatNumber(
-                            Number(dashboardInfo?.data?.totalUsersInSystem ?? 0)
-                          )
-                        )}
-                      </Typography>
-                    </CardContent>
-                  </AppPaper>
+                  <AppMetricCard
+                    icon={PeopleIcon}
+                    color="#C84419"
+                    count={DisplayUtilities.formatNumber(
+                      Number(dashboardInfo?.data?.totalUsersInSystem ?? 0)
+                    )}
+                    title="Total Users"
+                    loading={isMetricsLoading}
+                  />
                 </Grid>
               </Grid>
             </Grid>

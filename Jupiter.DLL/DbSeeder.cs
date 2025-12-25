@@ -11,8 +11,12 @@ using Jupiter.Models.Entities.Users;
 using Jupiter.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.SqlServer.Server;
+using System.Diagnostics;
 using System.Security.Claims;
 using System.Text;
+using ConsoleTables;
+
 
 namespace Jupiter.DAL
 {
@@ -142,51 +146,82 @@ namespace Jupiter.DAL
             }
         }
 
-        private static async Task InitializeTenantsAsync(JupiterContext context, CancellationToken cancellationToken)
+        public static async Task InitializeTenantsAsync(JupiterContext context, CancellationToken cancellationToken)
         {
-            if (!await context.Tenants.AnyAsync(cancellationToken))
+            if (await context.Tenants.AnyAsync(cancellationToken))
             {
-                var tenantFaker = new Faker<Tenant>()
-                                     .RuleFor(t => t.Name, f => "RTech")
-                                     .RuleFor(t => t.Host, f => "localhost")
-                                     .RuleFor(t => t.CreatedOn, f => f.Date.Past(1))
-                                     .RuleFor(t => t.ModifiedOn, f => f.Date.Recent())
-                                     .RuleFor(t => t.ProfilePicture, (f, p) => new Image
-                                     {
-                                         Data = Encoding.UTF8.GetBytes(f.Image.PicsumUrl()),
-                                         Title = f.Name.Random.AlphaNumeric(9)
-                                     })
-                                     .RuleFor(x => x.Users, f => GenerateTenantUsers(10))
-                                     .RuleFor(x => x.Settings, f => GetPredefinedSettingsForTenant());
-
-
-                await Task.Factory.StartNew(() =>
-                {
-                    for (int i = 1; i <= 1; i++)
-                    {
-                        Console.WriteLine($"----------------------------------------");
-                        Console.WriteLine("Started Batch Execution No.: {0}", i);
-                        Console.WriteLine($"----------------------------------------");
-
-                        var tenants = tenantFaker.Generate(1);
-
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine("Tenants Generated for batch: {0}", tenants.Count);
-                        Console.ResetColor();
-
-                        context.Tenants.AddRange(tenants);
-
-                        context.SaveChanges();
-
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine($"------------------------------------");
-                        Console.WriteLine("Batch Execution Completed: Batch No.: {0}", i);
-                        Console.WriteLine($"------------------------------------");
-                        Console.ResetColor();
-                    }
-                });
+                Console.WriteLine("✅ Tenants already exist. Skipping seeding.");
+                return;
             }
+
+            var totalTenants = 10_000;
+            var batchSize = 50;
+            var totalBatches = totalTenants / batchSize;
+
+            var tenantFaker = new Faker<Tenant>()
+                .RuleFor(t => t.Name, f => f.Company.CompanyName())
+                .RuleFor(t => t.Host, f => f.Internet.DomainName())
+                .RuleFor(t => t.CreatedOn, f => f.Date.Past(1))
+                .RuleFor(t => t.ModifiedOn, f => f.Date.Recent())
+                .RuleFor(t => t.ProfilePicture, f => new Image
+                {
+                    Data = Encoding.UTF8.GetBytes(f.Image.PicsumUrl()),
+                    Title = f.Random.AlphaNumeric(8)
+                })
+                .RuleFor(x => x.Users, f => GenerateTenantUsers(200)) // ⚠️ changed 20000 → 200
+                .RuleFor(x => x.Settings, f => GetPredefinedSettingsForTenant());
+
+            Console.WriteLine();
+            PrintHeader("🚀 Starting Tenant Seeding", ConsoleColor.Cyan);
+            Console.WriteLine($"Total Tenants: {totalTenants}, Batch Size: {batchSize}\n");
+
+            var stopwatch = Stopwatch.StartNew();
+
+            for (int batch = 1; batch <= totalBatches; batch++)
+            {
+                var batchTimer = Stopwatch.StartNew();
+
+                var tenants = tenantFaker.Generate(batchSize);
+                await context.Tenants.AddRangeAsync(tenants, cancellationToken);
+                await context.SaveChangesAsync(cancellationToken);
+
+                batchTimer.Stop();
+
+                // ✅ Beautified console output
+                PrintSectionHeader($"Batch {batch:N0} / {totalBatches:N0}");
+                var table = new ConsoleTable("Metric", "Value");
+                table.AddRow("Tenants Generated", tenants.Count)
+                     .AddRow("Batch Duration", $"{batchTimer.ElapsedMilliseconds} ms")
+                     .AddRow("Progress", $"{(batch / (double)totalBatches * 100):F2}%")
+                     .AddRow("Elapsed (Total)", $"{stopwatch.Elapsed:mm\\:ss}");
+                table.Write(ConsoleTables.Format.Minimal);
+
+                Console.WriteLine();
+            }
+
+            stopwatch.Stop();
+            PrintHeader("🎉 Seeding Completed Successfully!", ConsoleColor.Green);
+            Console.WriteLine($"Total Duration: {stopwatch.Elapsed:hh\\:mm\\:ss}\n");
         }
+
+        private static void PrintHeader(string text, ConsoleColor color)
+        {
+            Console.ForegroundColor = color;
+            Console.WriteLine("==================================================");
+            Console.WriteLine($" {text}");
+            Console.WriteLine("==================================================");
+            Console.ResetColor();
+        }
+
+        private static void PrintSectionHeader(string text)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"\n----------------------------------------");
+            Console.WriteLine($" {text}");
+            Console.WriteLine("----------------------------------------");
+            Console.ResetColor();
+        }
+
 
         public static List<TenantUser> GenerateTenantUsers(int count = 1)
         {
@@ -200,7 +235,7 @@ namespace Jupiter.DAL
         {
             var user = GenerateUsers().FirstOrDefault();
 
-            user.PasswordHash = PasswordHasher.HashPassword(user, "@RxD@123");
+            user.PasswordHash = PasswordHasher.HashPassword(user, "@Raj@123");
             user.EmailConfirmed = true;
             user.AccessFailedCount = 0;
             user.LockoutEnd = null;

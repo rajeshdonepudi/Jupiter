@@ -6,6 +6,7 @@ const AppConstants = {
     StandardSpacing: 1,
     StandardMargin: "0.2rem",
   },
+  CHART_HEIGHT: 320,
   paging: {
     pageSizeOptions: PAGE_SIZE_OPTIONS,
   },

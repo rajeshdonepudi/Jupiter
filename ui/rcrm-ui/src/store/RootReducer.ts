@@ -10,14 +10,12 @@ import { themeSlice } from "@slices/themeSlice";
 import { logsAPI } from "@/services/SystemLogs/LogsService";
 import { tenantSlice } from "./Slices/tenantSlice";
 import { tenantsAPI } from "@/services/Tenant/TenantService";
-import { mailsAPI } from "@/services/Mail/MailService";
 import { userAPI } from "@/services/User/UserService";
 import { commonSlice } from "@slices/commonSlice";
 import { permissionsAPI } from "@/services/Security/PermissionService";
 import { securityGroupsAPI } from "@/services/Security/SecurityGroupService";
 import { domainServiceAPI } from "@/services/Domain/DomainService";
 import { questionsAPI } from "@/services/QuestionsAndAnswers/QuestionService";
-import { mailReaderAPI } from "@/services/Mail/MailReaderService";
 import { expenseServiceAPI } from "@/services/ExpenseManagement/ExpenseService";
 import { expenseCategoryServiceAPI } from "@/services/ExpenseManagement/ExpenseCategoryService";
 
@@ -30,14 +28,13 @@ const rootReducer = combineReducers({
   [rolesAPI.reducerPath]: rolesAPI.reducer,
   [landingPageAPI.reducerPath]: landingPageAPI.reducer,
   [logsAPI.reducerPath]: logsAPI.reducer,
-  [mailsAPI.reducerPath]: mailsAPI.reducer,
+
   [userAPI.reducerPath]: userAPI.reducer,
   [permissionsAPI.reducerPath]: permissionsAPI.reducer,
   [securityGroupsAPI.reducerPath]: securityGroupsAPI.reducer,
   [questionsAPI.reducerPath]: questionsAPI.reducer,
   [domainServiceAPI.reducerPath]: domainServiceAPI.reducer,
   [expenseServiceAPI.reducerPath]: expenseServiceAPI.reducer,
-  [mailReaderAPI.reducerPath]: mailReaderAPI.reducer,
   [expenseCategoryServiceAPI.reducerPath]: expenseCategoryServiceAPI.reducer,
   auth: authSlice.reducer,
   theme: themeSlice.reducer,

@@ -83,6 +83,13 @@ namespace Jupiter.BLL.Services
 
         public Guid GetTenantId()
         {
+            var useLocal = _configuration.GetValue<bool>("useLocalTenantId");
+
+            if(useLocal)
+            {
+                return _configuration.GetValue<Guid>("localTenantId");
+            }
+
             var refererQuery = _httpContextAccessor?.HttpContext?.Request?.Query["referer"].FirstOrDefault() ??
                    _httpContextAccessor?.HttpContext?.Request?.Query["Referer"].FirstOrDefault();
 

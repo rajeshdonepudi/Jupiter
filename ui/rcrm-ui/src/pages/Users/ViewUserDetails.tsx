@@ -9,6 +9,9 @@ import {
   Skeleton,
   Stack,
   Typography,
+  IconButton,
+  Tooltip,
+  Box,
 } from "@mui/material";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
@@ -16,9 +19,11 @@ import {
   useGetUserPermissionsQuery,
   useGetUserRolesQuery,
   useRemoveUserPermissionMutation,
+  useUpdateProfilePictureMutation,
 } from "@/services/User/UserService";
 import DisplayUtilities from "@/utilities/DisplayUtilities";
 import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import NavUtilities from "@/utilities/NavUtilities";
 import AppAccordion from "@/components/ui-components/AppAccordion";
 import { toast } from "react-toastify";
@@ -27,6 +32,11 @@ import AppConstants from "@/constants/constants";
 import AppPaper from "@/components/ui-components/AppPaper";
 import Grid from "@mui/material/Grid2";
 import AppCopyableText from "@/components/ui-components/AppCopyableText";
+import AppModal from "@/components/ui-components/AppModal";
+import AppImageCropper from "@/components/ui-components/AppImageCropper";
+import { AppVisuallyHiddenInput } from "@/components/ui-components/AppVisualllyHiddenInput";
+import ImageUtilities from "@/utilities/ImageUtilities";
+import { ChangeEvent, useRef, useState } from "react";
 
 const ViewUserDetails = () => {
   let [searchParams, setSearchParams] = useSearchParams();
@@ -40,6 +50,15 @@ const ViewUserDetails = () => {
     useGetUserPermissionsQuery(resourceId);
 
   const [removeUserPermission] = useRemoveUserPermissionMutation();
+  const [updateProfilePicture] = useUpdateProfilePictureMutation();
+
+  // Profile picture editing state
+  const [selectedImageBase64, setSelectedImageBase64] = useState<string>("");
+  const [modalState, setModalState] = useState({
+    visible: false,
+  });
+  const imagePickerRef = useRef<any>(null);
+  const photoCropperRef = useRef<any>(null);
 
   const onUserPermissionDelete = (permission: string) => {
     removeUserPermission({
@@ -50,6 +69,69 @@ const ViewUserDetails = () => {
       .then(() => {
         toast("Permission removed successfully.");
       });
+  };
+
+  // Profile picture editing functions
+  const onFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.readAsArrayBuffer(file);
+      reader.onload = async () => {
+        const byteArray = new Uint8Array(reader.result as ArrayBuffer);
+        setSelectedImageBase64(
+          `data:image/png;base64, ${ImageUtilities.convertArrayBufferToBase64(
+            byteArray
+          )}`
+        );
+        setModalState(() => {
+          return {
+            visible: true,
+          };
+        });
+      };
+    }
+  };
+
+  const onCancelUpdateProfilePicture = () => {
+    setModalState(() => {
+      return {
+        visible: false,
+      };
+    });
+    setSelectedImageBase64("");
+  };
+
+  const onProfilePictureConfirmed = async () => {
+    const croppedImage = await photoCropperRef?.current?.getCroppedImage();
+    const fetchData = async (imageUrl: string) => {
+      try {
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = () => {
+          updateProfilePicture({
+            userId: resourceId,
+            image: String(reader?.result).split(",")[1],
+          })
+            .unwrap()
+            .then(() => {
+              toast.success("Profile picture updated successfully");
+              onCancelUpdateProfilePicture();
+            })
+            .catch(() => {
+              toast.error("Failed to update profile picture");
+            });
+        };
+      } catch (error) {
+        console.error("Error fetching image:", error);
+        toast.error("Error processing image");
+      }
+    };
+    if (croppedImage) {
+      await fetchData(croppedImage);
+    }
   };
 
   return (
@@ -76,6 +158,12 @@ const ViewUserDetails = () => {
       }
       content={
         <>
+          <AppVisuallyHiddenInput
+            type="file"
+            ref={imagePickerRef}
+            onChange={onFileChange}
+            accept="image/*"
+          />
           <Grid container>
             <Grid size={12}>
               <AppPaper>
@@ -87,19 +175,56 @@ const ViewUserDetails = () => {
                         justifyContent={"center"}
                         alignItems={"center"}
                       >
-                        {isUserDetailsLoading ? (
-                          <Skeleton
-                            variant="circular"
-                            height={"150px"}
-                            width={"150px"}
-                          />
-                        ) : (
-                          <Avatar
-                            alt={`${userDetails?.data.firstName} ${userDetails?.data.lastName}`}
-                            src={`data:image/gif;base64,${userDetails?.data.avatar}`}
-                            sx={{ width: 150, height: 150 }}
-                          />
-                        )}
+                        <Box
+                          sx={{ position: "relative", display: "inline-block" }}
+                        >
+                          {isUserDetailsLoading ? (
+                            <Skeleton
+                              variant="circular"
+                              height={"150px"}
+                              width={"150px"}
+                            />
+                          ) : (
+                            <Avatar
+                              alt={`${userDetails?.data.firstName} ${userDetails?.data.lastName}`}
+                              src={`data:image/gif;base64,${userDetails?.data.avatar}`}
+                              sx={{ width: 150, height: 150 }}
+                            />
+                          )}
+
+                          {/* Edit Profile Picture Button */}
+                          {!isUserDetailsLoading && (
+                            <Box
+                              sx={{
+                                position: "absolute",
+                                bottom: 0,
+                                right: 0,
+                                display: "flex",
+                                gap: 0.5,
+                              }}
+                            >
+                              <Tooltip title="Update profile picture">
+                                <IconButton
+                                  size="small"
+                                  onClick={() =>
+                                    imagePickerRef?.current?.click()
+                                  }
+                                  sx={{
+                                    bgcolor: "primary.main",
+                                    color: "white",
+                                    "&:hover": {
+                                      bgcolor: "primary.dark",
+                                    },
+                                    width: 32,
+                                    height: 32,
+                                  }}
+                                >
+                                  <EditOutlinedIcon fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+                            </Box>
+                          )}
+                        </Box>
 
                         {isUserDetailsLoading ? (
                           <Skeleton height={"60px"} width={"100px"} />
@@ -426,6 +551,23 @@ const ViewUserDetails = () => {
               )}
             </Grid>
           </Grid>
+
+          {/* Profile Picture Update Modal */}
+          <AppModal
+            modalTitle="Update Profile Picture"
+            show={modalState.visible}
+            okButtonText="Update"
+            handleOk={onProfilePictureConfirmed}
+            handleClose={onCancelUpdateProfilePicture}
+            maxWidth="md"
+          >
+            <Stack>
+              <AppImageCropper
+                ref={photoCropperRef}
+                image={selectedImageBase64}
+              />
+            </Stack>
+          </AppModal>
         </>
       }
     ></AppPage>

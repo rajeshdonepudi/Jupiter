@@ -1,27 +1,28 @@
-import AppConstants from "@/constants/constants";
-import { Box, Typography } from "@mui/material";
+// components/AppAnimatedTabPanel.tsx
+import { Box } from "@mui/material";
+import { motion, AnimatePresence } from "framer-motion";
 
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-const AppTabPanel = (props: TabPanelProps) => {
-  const { children, value, index, ...other } = props;
+export const AppAnimatedTabPanel = ({ value, index, children }: any) => {
+  const active = value === index;
 
   return (
-    <div
-      role="tabpanel"
-      style={{ paddingTop: "0.5rem" }}
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && children}
-    </div>
+    <AnimatePresence mode="wait">
+      {active && (
+        <Box
+          component={motion.div}
+          key={index}
+          role="tabpanel"
+          id={`tabpanel-${index}`}
+          aria-labelledby={`tab-${index}`}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.25 }}
+          sx={{ pt: 2 }}
+        >
+          {children}
+        </Box>
+      )}
+    </AnimatePresence>
   );
 };
-
-export default AppTabPanel;

@@ -13,6 +13,7 @@ const fontStyles = {
   Honk: "Honk",
   Mulish: "Mulish",
   Outfit: "Outfit",
+  GoogleSansFlex: "Google Sans Flex",
 };
 
 export default fontStyles;

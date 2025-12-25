@@ -1,5 +1,8 @@
 import * as yup from "yup";
 import { ExpenseTypeEnum } from "@/enumerations/ExpenseManagement/ExpenseTypeEnum";
+import dayjs, { Dayjs } from "dayjs";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 
 export const AddExpenseValidationScheme = () => {
   return yup.object({
@@ -9,11 +12,7 @@ export const AddExpenseValidationScheme = () => {
       .positive("Amount must be greater than zero")
       .typeError("Amount must be a valid number"),
 
-    expenseDate: yup
-      .date()
-      .max(new Date(), "Expense date cannot be in the future.")
-      .min(new Date(2025, 0, 1), "Expense date can't be before the year 2000.")
-      .required("Expense date is required."),
+    expenseDate: yup.mixed<Dayjs>(),
 
     type: yup
       .mixed<ExpenseTypeEnum>()

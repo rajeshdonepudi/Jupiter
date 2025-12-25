@@ -6,7 +6,7 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 const Stack = lazy(() => import("@mui/material/Stack"));
 
 import Paper from "@mui/material/Paper";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Avatar,
   IconButton,
@@ -28,6 +28,8 @@ import AppPage from "@/components/ui-components/AppPage";
 import AppConstants from "@/constants/constants";
 import AppPaper from "@/components/ui-components/AppPaper";
 import AppCopyableText from "@/components/ui-components/AppCopyableText";
+import { updateProfilePicture } from "@/store/Slices/authSlice";
+import { InfoGrid } from "@/components/ui-components/AppInfoGrid";
 
 const UserProfile = () => {
   const [uploadProfilePicture] = useUpdateProfilePictureMutation();
@@ -39,6 +41,7 @@ const UserProfile = () => {
   const loggedInUser = useSelector((state: any) => state.auth);
   const { data: userInfo, isLoading: isUserInfoLoading } =
     useGetUserProfileInfoQuery(loggedInUser.id);
+  const dispatch = useDispatch();
 
   const userDetails = useMemo(() => {
     return userInfo?.data;
@@ -91,6 +94,11 @@ const UserProfile = () => {
           })
             .unwrap()
             .then(() => {
+              dispatch(
+                updateProfilePicture({
+                  profilePicture: String(reader?.result).split(",")[1],
+                })
+              );
               onCancelUpdateProfilePicture();
             });
         };
@@ -162,72 +170,15 @@ const UserProfile = () => {
             </Grid>
             <Grid size={{ xs: 12, md: 12 }}>
               <AppPaper>
-                <Grid container spacing={AppConstants.layout.StandardSpacing}>
-                  <Grid size={{ md: 3 }}>
-                    {isUserInfoLoading ? (
-                      <Stack spacing={AppConstants.layout.StandardSpacing}>
-                        <Skeleton variant="text" width={60} height={20} />
-                        <Skeleton variant="text" width={120} height={24} />
-                      </Stack>
-                    ) : (
-                      <Stack>
-                        <Typography variant="caption">First Name</Typography>
-                        <Typography variant="body2">
-                          {userDetails?.firstName}
-                        </Typography>
-                      </Stack>
-                    )}
-                  </Grid>
-
-                  <Grid size={{ md: 3 }}>
-                    {isUserInfoLoading ? (
-                      <Stack spacing={AppConstants.layout.StandardSpacing}>
-                        <Skeleton variant="text" width={60} height={20} />
-                        <Skeleton variant="text" width={120} height={24} />
-                      </Stack>
-                    ) : (
-                      <Stack>
-                        <Typography variant="caption">Last Name</Typography>
-                        <Typography variant="body2">
-                          {userDetails?.lastName}
-                        </Typography>
-                      </Stack>
-                    )}
-                  </Grid>
-
-                  <Grid size={12}>
-                    {isUserInfoLoading ? (
-                      <Stack spacing={AppConstants.layout.StandardSpacing}>
-                        <Skeleton variant="text" width={40} height={20} />
-                        <Skeleton variant="text" width={100} height={24} />
-                      </Stack>
-                    ) : (
-                      <Stack>
-                        <Typography variant="caption">Email</Typography>
-                        <AppCopyableText text={String(userDetails?.email)} />
-                        {/* <Typography variant="body2">
-                          {userDetails?.email}
-                        </Typography> */}
-                      </Stack>
-                    )}
-                  </Grid>
-
-                  <Grid size={{ md: 3 }}>
-                    {isUserInfoLoading ? (
-                      <Stack spacing={AppConstants.layout.StandardSpacing}>
-                        <Skeleton variant="text" width={40} height={20} />
-                        <Skeleton variant="text" width={100} height={24} />
-                      </Stack>
-                    ) : (
-                      <Stack>
-                        <Typography variant="caption">Phone</Typography>
-                        <Typography variant="body2">
-                          {userDetails?.phone}
-                        </Typography>
-                      </Stack>
-                    )}
-                  </Grid>
-                </Grid>
+                <InfoGrid
+                  loading={isUserInfoLoading}
+                  items={[
+                    { label: "First Name", value: userDetails?.firstName },
+                    { label: "Last Name", value: userDetails?.lastName },
+                    { label: "Email", value: userDetails?.email },
+                    { label: "Phone", value: userDetails?.phone },
+                  ]}
+                />
               </AppPaper>
             </Grid>
           </Grid>

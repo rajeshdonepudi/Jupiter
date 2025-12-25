@@ -133,7 +133,7 @@ const App = () => {
     }
   };
 
-  const systemTheme = useMemo(
+  const baseTheme = useMemo(
     () =>
       createTheme({
         components: {
@@ -148,9 +148,67 @@ const App = () => {
         },
         typography: {
           fontFamily: siteThemeInfo?.fontFamily,
+          // Base font size for accessibility (16px minimum)
+          fontSize: 16,
+          // Accessibility-compliant typography variants
+          h1: {
+            fontSize: "2.5rem", // 40px
+            fontWeight: 700,
+            lineHeight: 1.2,
+          },
+          h2: {
+            fontSize: "2rem", // 32px
+            fontWeight: 600,
+            lineHeight: 1.3,
+          },
+          h3: {
+            fontSize: "1.75rem", // 28px
+            fontWeight: 600,
+            lineHeight: 1.3,
+          },
+          h4: {
+            fontSize: "1.5rem", // 24px
+            fontWeight: 600,
+            lineHeight: 1.4,
+          },
+          h5: {
+            fontSize: "1.25rem", // 20px
+            fontWeight: 600,
+            lineHeight: 1.4,
+          },
+          h6: {
+            fontSize: "1.125rem", // 18px
+            fontWeight: 600,
+            lineHeight: 1.4,
+          },
+          body1: {
+            fontSize: "1rem", // 16px - WCAG AA compliant
+            lineHeight: 1.6,
+          },
+          body2: {
+            fontSize: "0.875rem", // 14px - minimum for secondary text
+            lineHeight: 1.6,
+          },
+          button: {
+            fontSize: "1rem", // 16px for touch targets
+            fontWeight: 600,
+            textTransform: "none" as const,
+          },
           caption: {
+            fontSize: "0.875rem", // 14px minimum
             fontWeight: 600,
             color: "gray",
+            lineHeight: 1.4,
+          },
+          subtitle1: {
+            fontSize: "1rem", // 16px
+            fontWeight: 500,
+            lineHeight: 1.5,
+          },
+          subtitle2: {
+            fontSize: "0.875rem", // 14px
+            fontWeight: 500,
+            lineHeight: 1.5,
           },
         },
         palette: {
@@ -190,9 +248,19 @@ const App = () => {
     ]
   );
 
+  // Create responsive theme with enhanced scaling for accessibility
+  const responsiveTheme = useMemo(
+    () =>
+      responsiveFontSizes(baseTheme, {
+        breakpoints: ["sm", "md", "lg"],
+        factor: 2, // More conservative scaling for better readability
+      }),
+    [baseTheme]
+  );
+
   return (
     <>
-      <ThemeProvider theme={responsiveFontSizes(systemTheme)}>
+      <ThemeProvider theme={responsiveTheme}>
         <CssBaseline />
         <GlobalStyles
           styles={(theme) => ({

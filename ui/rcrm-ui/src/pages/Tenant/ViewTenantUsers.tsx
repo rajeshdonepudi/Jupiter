@@ -67,6 +67,7 @@ const Stack = lazy(() => import("@mui/material/Stack"));
 const Typography = lazy(() => import("@mui/material/Typography"));
 import Grid from "@mui/material/Grid2";
 import AppPaper from "@/components/ui-components/AppPaper";
+import AppMetricCard from "@/components/ui-components/AppMetricCard";
 
 const ViewTenantUsers = () => {
   /****
@@ -550,6 +551,45 @@ const ViewTenantUsers = () => {
     });
   };
 
+  const metricCards = [
+    {
+      icon: PermIdentityOutlinedIcon,
+      color: "#1679AB",
+      title: `${commonLocale("total")} ${commonLocale("users")}`,
+      count: dashboardInfo?.data?.totalUsers ?? 0,
+    },
+    {
+      icon: PermIdentityOutlinedIcon,
+      color: "#1679AB",
+      title: `${commonLocale("active")} ${commonLocale("users")}`,
+      count: dashboardInfo?.data?.activeUsers ?? 0,
+    },
+    {
+      icon: PersonOffOutlinedIcon,
+      color: "#C62828",
+      title: `${commonLocale("deactivated")} ${commonLocale("users")}`,
+      count: dashboardInfo?.data?.deactivatedUsers ?? 0,
+    },
+    {
+      icon: VerifiedUserOutlinedIcon,
+      color: "#2E7D32",
+      title: `${commonLocale("verified")} ${commonLocale("users")}`,
+      count: dashboardInfo?.data?.verifiedUsers ?? 0,
+    },
+    {
+      icon: VerifiedUserOutlinedIcon,
+      color: "#0288D1",
+      title: `${commonLocale("unverified")} ${commonLocale("users")}`,
+      count: dashboardInfo?.data?.unVerifiedUsers ?? 0,
+    },
+    {
+      icon: VerifiedUserOutlinedIcon,
+      color: "#F57C00",
+      title: `${commonLocale("locked")} ${commonLocale("users")}`,
+      count: dashboardInfo?.data?.lockedUsers ?? 0,
+    },
+  ];
+
   return (
     <>
       <>
@@ -577,187 +617,28 @@ const ViewTenantUsers = () => {
           </Grid>
           <Grid size={{ xs: 12, md: 12 }}>
             <Grid container spacing={0.8}>
-              <Grid size={{ md: 2 }}>
-                <AppPaper>
-                  <CardContent>
-                    <Stack
-                      direction={"row"}
-                      justifyContent={"start"}
-                      alignItems={"center"}
-                    >
-                      <PermIdentityOutlinedIcon fontSize="small" />
-                      <Typography
-                        flexGrow={1}
-                        variant="caption"
-                        color="text.secondary"
-                      >
-                        {isMetricsLoading ? (
-                          <Skeleton />
-                        ) : (
-                          `${commonLocale("total")} ${commonLocale("users")}`
-                        )}
-                      </Typography>
-                    </Stack>
-                    <Typography variant="h5">
-                      {isMetricsLoading ? (
-                        <Skeleton height={40} />
-                      ) : (
-                        dashboardInfo?.data?.totalUsers
-                      )}
-                    </Typography>
-                  </CardContent>
-                </AppPaper>
-              </Grid>
-              <Grid size={12}>
-                <AppPaper>
-                  <CardContent>
-                    <Stack direction={"row"}>
-                      <PermIdentityOutlinedIcon fontSize="small" />
-                      <Typography
-                        flexGrow={1}
-                        variant="caption"
-                        color="text.secondary"
-                      >
-                        {isMetricsLoading ? (
-                          <Skeleton />
-                        ) : (
-                          `${commonLocale("active")} ${commonLocale("users")}`
-                        )}
-                      </Typography>
-                    </Stack>
-                    <Typography variant="h5">
-                      {isMetricsLoading ? (
-                        <Skeleton height={40} />
-                      ) : (
-                        dashboardInfo?.data?.activeUsers
-                      )}
-                    </Typography>
-                  </CardContent>
-                </AppPaper>
-              </Grid>
-              <Grid size={12}>
-                <AppPaper>
-                  <CardContent>
-                    <Stack direction={"row"}>
-                      <PersonOffOutlinedIcon fontSize="small" />
-                      <Typography
-                        flexGrow={1}
-                        variant="caption"
-                        color="text.secondary"
-                      >
-                        {isMetricsLoading ? (
-                          <Skeleton />
-                        ) : (
-                          `${commonLocale("deactivated")} ${commonLocale(
-                            "users"
-                          )}`
-                        )}
-                      </Typography>
-                    </Stack>
-                    <Typography variant="h5">
-                      {isMetricsLoading ? (
-                        <Skeleton height={40} />
-                      ) : (
-                        dashboardInfo?.data?.deactivatedUsers
-                      )}
-                    </Typography>
-                  </CardContent>
-                </AppPaper>
-              </Grid>
-              <Grid size={12}>
-                <AppPaper>
-                  <CardContent>
-                    <Stack direction={"row"}>
-                      <VerifiedUserOutlinedIcon fontSize="small" />
-                      <Typography
-                        flexGrow={1}
-                        variant="caption"
-                        color="text.secondary"
-                      >
-                        {isMetricsLoading ? (
-                          <Skeleton />
-                        ) : (
-                          `${commonLocale("verified")} ${commonLocale("users")}`
-                        )}
-                      </Typography>
-                    </Stack>
-                    <Typography variant="h5">
-                      {isMetricsLoading ? (
-                        <Skeleton height={40} />
-                      ) : (
-                        dashboardInfo?.data?.verifiedUsers
-                      )}
-                    </Typography>
-                  </CardContent>
-                </AppPaper>
-              </Grid>
-              <Grid size={12}>
-                <AppPaper>
-                  <CardContent>
-                    <Stack direction={"row"}>
-                      <VerifiedUserOutlinedIcon fontSize="small" />
-                      <Typography
-                        flexGrow={1}
-                        variant="caption"
-                        color="text.secondary"
-                      >
-                        {isMetricsLoading ? (
-                          <Skeleton />
-                        ) : (
-                          `${commonLocale("unverified")} ${commonLocale(
-                            "users"
-                          )}`
-                        )}
-                      </Typography>
-                    </Stack>
-                    <Typography variant="h5">
-                      {isMetricsLoading ? (
-                        <Skeleton height={40} />
-                      ) : (
-                        dashboardInfo?.data?.unVerifiedUsers
-                      )}
-                    </Typography>
-                  </CardContent>
-                </AppPaper>
-              </Grid>
-              <Grid size={12}>
-                <AppPaper>
-                  <CardContent>
-                    <Stack direction={"row"}>
-                      <VerifiedUserOutlinedIcon fontSize="small" />
-                      <Typography
-                        flexGrow={1}
-                        variant="caption"
-                        color="text.secondary"
-                      >
-                        {isMetricsLoading ? (
-                          <Skeleton />
-                        ) : (
-                          `${commonLocale("locked")} ${commonLocale("users")}`
-                        )}
-                      </Typography>
-                    </Stack>
-                    <Typography variant="h5">
-                      {isMetricsLoading ? (
-                        <Skeleton height={40} />
-                      ) : (
-                        dashboardInfo?.data?.lockedUsers
-                      )}
-                    </Typography>
-                  </CardContent>
-                </AppPaper>
-              </Grid>
+              {metricCards.map((card, idx) => (
+                <Grid key={idx} size={{ xl: 2, lg: 3, md: 4, sm: 6, xs: 12 }}>
+                  <AppMetricCard
+                    icon={card.icon}
+                    color={card.color}
+                    title={card.title}
+                    count={card.count}
+                    loading={isMetricsLoading}
+                  />
+                </Grid>
+              ))}
             </Grid>
           </Grid>
 
           <Grid size={{ xs: 12, md: 12 }}>
             <Grid container spacing={0.8} alignItems={"center"}>
-              <Grid size={12}>
+              <Grid size={11}>
                 {isTableInfoLoading ? (
                   <Skeleton height={60} />
                 ) : (
                   <TextField
-                    size="small"
+                    size="medium"
                     id="outlined-basic"
                     label="Search user by email, firstname or lastname"
                     variant="outlined"
@@ -765,7 +646,7 @@ const ViewTenantUsers = () => {
                   />
                 )}
               </Grid>
-              <Grid size={12}>
+              <Grid size={1}>
                 {isTableInfoLoading ? (
                   <Skeleton height={60} />
                 ) : (
@@ -773,7 +654,6 @@ const ViewTenantUsers = () => {
                     disabled={selectedAction.users.length === 0}
                     startIcon={<MoreVertIcon />}
                     variant="outlined"
-                    size="medium"
                     fullWidth
                     id="basic-button"
                     aria-controls={open ? "basic-menu" : undefined}

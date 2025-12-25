@@ -37,14 +37,16 @@ namespace Jupiter.Models.Dtos.Users
 
         public UserDto(User user)
         {
+            ArgumentNullException.ThrowIfNull(user);
+
             Id = user.Id;
             FirstName = user.FirstName;
             LastName = user.LastName;
-            Avatar = user?.ProfilePicture?.Base64 ?? "";
-            FullName = user?.FirstName + " " + user?.LastName;
-            UserName = user?.UserName!;
-            Email = user?.Email!;
-            Phone = user?.PhoneNumber!;
+            Avatar = user.ProfilePicture?.Base64 ?? "";
+            FullName = user.FirstName + " " + user.LastName;
+            UserName = user.UserName!;
+            Email = user.Email!;
+            Phone = user.PhoneNumber!;
             EmailConfirmed = user.EmailConfirmed;
             PhoneNumberConfirmed = user.PhoneNumberConfirmed;
             TwoFactorEnabled = user.TwoFactorEnabled;

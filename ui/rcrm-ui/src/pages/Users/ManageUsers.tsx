@@ -7,7 +7,6 @@ const DeleteOutlineOutlinedIcon = lazy(
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import MarkEmailReadOutlinedIcon from "@mui/icons-material/MarkEmailReadOutlined";
 const EditOutlinedIcon = lazy(() => import("@mui/icons-material/EditOutlined"));
-import AppLoader from "@ui-components/AppLoader";
 import AppModal from "@ui-components/AppModal";
 import { UserActions } from "@/enumerations/Users/user-actions.enum";
 import { AppModalState } from "@models/Common/ModalState";
@@ -25,14 +24,11 @@ import {
   GridRowSelectionModel,
 } from "@mui/x-data-grid";
 import {
-  Card,
-  CardContent,
   IconButton,
   ListItemIcon,
   ListItemText,
   Menu,
   MenuItem,
-  Paper,
   Skeleton,
   TextField,
   Tooltip,
@@ -63,6 +59,8 @@ import GppBadOutlinedIcon from "@mui/icons-material/GppBadOutlined";
 import { LockPersonOutlined } from "@mui/icons-material";
 import AppPaper from "@/components/ui-components/AppPaper";
 import AppCopyableText from "@/components/ui-components/AppCopyableText";
+import { usePaginatedGrid } from "@/hooks/usePaginatedGrid";
+import GridUtilities from "@/utilities/GridUtilities";
 const PermIdentityOutlinedIcon = lazy(
   () => import("@mui/icons-material/PermIdentityOutlined")
 );
@@ -94,17 +92,8 @@ const ManageUsers = () => {
     okButtonText: undefined,
   });
 
-  const [paginationModel, setPaginationModel] = useState<{
-    accountAlias?: "";
-    searchPhrase?: "";
-    page: number;
-    pageSize: number;
-  }>({
-    page: 0,
-    pageSize: 5,
-    accountAlias: "",
-    searchPhrase: "",
-  });
+  const { gridState, setPagination, setSort, setFilter, setSearch } =
+    usePaginatedGrid({ pageSize: 5 });
 
   /****
    * Queries
@@ -115,10 +104,9 @@ const ManageUsers = () => {
     data,
     isFetching,
     isLoading: isTableInfoLoading,
-  } = useGetAllTenantUsersQuery({
-    accountAlias: "",
-    ...paginationModel,
-  });
+  } = useGetAllTenantUsersQuery(
+    GridUtilities.mapGridStateToApi(gridState, { accountAlias: "" })
+  );
 
   const usersData = useMemo(() => {
     return data?.data.items ?? [];
@@ -571,17 +559,9 @@ const ManageUsers = () => {
     });
   };
 
-  const userSearched = (val: string) => {
-    const debouncedSetFilterState = CommonUtilities.debounce((fg: string) => {
-      setPaginationModel(() => ({
-        page: 0,
-        pageSize: 5,
-        searchTerm: fg,
-        tenants: [],
-      }));
-    }, 1500);
-    debouncedSetFilterState(val);
-  };
+  const userSearched = CommonUtilities.debounce((value: string) => {
+    setSearch(value);
+  }, 500);
 
   return (
     <>
@@ -818,28 +798,25 @@ const ManageUsers = () => {
               </Grid>
 
               <Grid size={{ sm: 12 }}>
-                <AppPaper>
-                  {isTableInfoLoading ? (
-                    <Skeleton height={150} />
-                  ) : (
-                    <AppDataGrid
-                      columnsToHide={{
-                        id: false,
-                      }}
-                      records={usersData}
-                      columns={columns}
-                      totalRecords={data?.data?.totalItems ?? 0}
-                      isFetching={isFetching}
-                      paginationState={paginationModel}
-                      setPaginationState={setPaginationModel}
-                      setRowId={(row) => row.resourceAlias}
-                      disableRowSelectionOnClick={true}
-                      selectedRows={selectedAction.users}
-                      onRowSelectionModelChange={onUserSelected}
-                      hasNextPage={data?.data?.isNextPage ?? false}
-                    />
-                  )}
-                </AppPaper>
+                {isTableInfoLoading ? (
+                  <Skeleton height={150} />
+                ) : (
+                  <AppDataGrid
+                    columnsToHide={{ id: false }}
+                    records={usersData}
+                    columns={columns}
+                    totalRecords={data?.data?.totalItems ?? 0}
+                    isFetching={isFetching}
+                    paginationState={gridState}
+                    setPaginationState={setPagination}
+                    getRowId={(row) => row.resourceAlias}
+                    disableRowSelectionOnClick={true}
+                    selectedRows={selectedAction.users}
+                    onRowSelectionModelChange={onUserSelected}
+                    hasNextPage={data?.data?.isNextPage ?? false}
+                    overlayMessage="No users found"
+                  />
+                )}
               </Grid>
             </Grid>
             <AppModal

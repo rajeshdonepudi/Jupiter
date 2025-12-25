@@ -1,9 +1,8 @@
-import { CardContent, Divider, Stack, Tab, Tabs } from "@mui/material";
+import { Stack, Tab, Tabs } from "@mui/material";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import AppTabPanel from "@/components/ui-components/AppTabPanel";
+import { AppAnimatedTabPanel } from "@/components/ui-components/AppTabPanel";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import AppPage from "@/components/ui-components/AppPage";
-import AppPaper from "@/components/ui-components/AppPaper";
 import SelectUsersView from "./SelectUsersView";
 import SelectSecurityGroupsView from "./SelectSecurityGroupsView";
 import ViewSelectedUsers from "./ViewSelectedUsers";
@@ -55,19 +54,19 @@ const PermissionAssignment = (props: any) => {
             <Tab label="Users" />
             <Tab label="Security Groups" />
           </Tabs>
-          <AppTabPanel value={value} index={0}>
+          <AppAnimatedTabPanel value={value} index={0}>
             <Stack spacing={AppConstants.layout.StandardSpacing}>
               <SelectUsersView formik={props.formik} />
               {/* <Divider /> */}
               <ViewSelectedUsers userIds={selectedInfo.users} />
             </Stack>
-          </AppTabPanel>
-          <AppTabPanel value={value} index={1}>
+          </AppAnimatedTabPanel>
+          <AppAnimatedTabPanel value={value} index={1}>
             <SelectSecurityGroupsView formik={props.formik} />
             <ViewSelectedSecurityGroups
               securityGroupIds={selectedInfo.groups}
             />
-          </AppTabPanel>
+          </AppAnimatedTabPanel>
         </Stack>
       }
     />

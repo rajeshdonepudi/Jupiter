@@ -799,28 +799,27 @@ const UserDirectory = () => {
                 <Grid container>
                   <Grid size={{ xs: 12, md: 12 }}>
                     <AppDataGrid
-                      columnsToHide={{
-                        id: false,
-                      }}
                       records={logData?.data.items ?? []}
                       columns={columns}
                       totalRecords={logData?.data.totalItems ?? 0}
                       isFetching={isFetching}
-                      paginationState={filterState}
-                      setPaginationState={(model) => {
-                        setFilterState((prev: any) => {
-                          return {
-                            ...prev,
-                            page: model.page,
-                            pageSize: model.pageSize,
-                          };
-                        });
+                      paginationState={{
+                        page: filterState.page,
+                        pageSize: filterState.pageSize,
                       }}
-                      setRowId={(row) => row.resourceAlias}
-                      disableRowSelectionOnClick={true}
+                      setPaginationState={(model) => {
+                        setFilterState((prev: any) => ({
+                          ...prev,
+                          page: model.page,
+                          pageSize: model.pageSize,
+                        }));
+                      }}
+                      hasNextPage={logData?.data.isNextPage ?? false}
                       selectedRows={selectedAction.users}
                       onRowSelectionModelChange={onUserSelected}
-                      hasNextPage={logData?.data.isNextPage ?? false}
+                      getRowId={(row) => row.resourceAlias}
+                      columnsToHide={{ id: false }}
+                      disableRowSelectionOnClick
                     />
                   </Grid>
                 </Grid>

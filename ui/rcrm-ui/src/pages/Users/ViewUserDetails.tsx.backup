@@ -1,0 +1,417 @@
+import AppLoader from "@/components/ui-components/AppLoader";
+import {
+  Avatar,
+  Button,
+  CardContent,
+  Chip,
+  Divider,
+  Skeleton,
+  Stack,
+  Typography,
+  Grid,
+  Box,
+  IconButton,
+  Tooltip,
+} from "@mui/material";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import {
+  useGetUserDetailsQuery,
+  useGetUserPermissionsQuery,
+  useGetUserRolesQuery,
+  useRemoveUserPermissionMutation,
+  useUpdateProfilePictureMutation,
+} from "@/services/User/UserService";
+import DisplayUtilities from "@/utilities/DisplayUtilities";
+import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import NavUtilities from "@/utilities/NavUtilities";
+import AppAccordion from "@/components/ui-components/AppAccordion";
+import { toast } from "react-toastify";
+import AppPage from "@/components/ui-components/AppPage";
+import AppConstants from "@/constants/constants";
+import AppPaper from "@/components/ui-components/AppPaper";
+import AppCopyableText from "@/components/ui-components/AppCopyableText";
+import AppModal from "@/components/ui-components/AppModal";
+import AppImageCropper from "@/components/ui-components/AppImageCropper";
+import { AppVisuallyHiddenInput } from "@/components/ui-components/AppVisualllyHiddenInput";
+import ImageUtilities from "@/utilities/ImageUtilities";
+import { ChangeEvent, useRef, useState } from "react";
+
+const ViewUserDetails = () => {
+  const [searchParams] = useSearchParams();
+  const resourceId = String(searchParams.get("resourceId"));
+  const navigate = useNavigate();
+
+  const { data: userDetails, isLoading: loadingUser, refetch: refetchUserDetails } =
+    useGetUserDetailsQuery(resourceId);
+  const { data: userRoles, isLoading: loadingRoles } =
+    useGetUserRolesQuery(resourceId);
+  const { data: userPermissions, isLoading: loadingPermissions } =
+    useGetUserPermissionsQuery(resourceId);
+
+  const [removeUserPermission] = useRemoveUserPermissionMutation();
+  const [updateProfilePicture] = useUpdateProfilePictureMutation();
+
+  // Profile picture editing state
+  const [selectedImageBase64, setSelectedImageBase64] = useState<string>("");
+  const [modalState, setModalState] = useState({
+    visible: false,
+  });
+  const imagePickerRef = useRef<any>(null);
+  const photoCropperRef = useRef<any>(null);
+
+  const onUserPermissionDelete = (permission: string) => {
+    removeUserPermission({ permission, resourceId })
+      .unwrap()
+      .then(() => toast.success("Permission removed successfully"));
+  };
+
+  // Profile picture editing functions
+  const onFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.readAsArrayBuffer(file);
+      reader.onload = async () => {
+        const byteArray = new Uint8Array(reader.result as ArrayBuffer);
+        setSelectedImageBase64(
+          `data:image/png;base64, ${ImageUtilities.convertArrayBufferToBase64(
+            byteArray
+          )}`
+        );
+        setModalState(() => {
+          return {
+            visible: true,
+          };
+        });
+      };
+    }
+  };
+
+  const onCancelUpdateProfilePicture = () => {
+    setModalState(() => {
+      return {
+        visible: false,
+      };
+    });
+    setSelectedImageBase64("");
+  };
+
+  const onProfilePictureConfirmed = async () => {
+    const croppedImage = await photoCropperRef?.current?.getCroppedImage();
+    const fetchData = async (imageUrl: string) => {
+      try {
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = () => {
+          updateProfilePicture({
+            userId: resourceId,
+            image: String(reader?.result).split(",")[1],
+          })
+            .unwrap()
+            .then(() => {
+              toast.success("Profile picture updated successfully");
+              refetchUserDetails(); // Refresh user details to show updated image
+              onCancelUpdateProfilePicture();
+            })
+            .catch(() => {
+              toast.error("Failed to update profile picture");
+            });
+        };
+      } catch (error) {
+        console.error("Error fetching image:", error);
+        toast.error("Error processing image");
+      }
+    };
+    if (croppedImage) {
+      await fetchData(croppedImage);
+    }
+  };
+
+  const InfoItem = ({
+    label,
+    value,
+    loading,
+  }: {
+    label: string;
+    value: React.ReactNode;
+    loading: boolean;
+  }) => (
+    <Stack spacing={0.5}>
+      {loading ? (
+        <Skeleton width={120} height={24} />
+      ) : (
+        <Typography variant="caption" color="text.secondary">
+          {label}
+        </Typography>
+      )}
+
+      {loading ? (
+        <Skeleton width={180} height={32} />
+      ) : (
+        <Typography variant="body2">{value}</Typography>
+      )}
+    </Stack>
+  );
+
+  return (
+    <AppPage
+      title="User Details"
+      rightHeaderActions={
+        <Button
+          onClick={() => navigate(NavUtilities.ToSecureArea("users"))}
+          startIcon={<ArrowBackOutlinedIcon />}
+          variant="outlined"
+        >
+          Back to Users
+        </Button>
+      }
+      content={
+        <>
+          <AppVisuallyHiddenInput
+            type="file"
+            ref={imagePickerRef}
+            onChange={onFileChange}
+            accept="image/*"
+          />
+          <Stack spacing={4}>
+          {/* ---------------- USER OVERVIEW CARD ---------------- */}
+          <AppPaper>
+            <CardContent>
+              <Stack spacing={3} alignItems="center">
+                <Box sx={{ position: "relative", display: "inline-block" }}>
+                  {loadingUser ? (
+                    <Skeleton variant="circular" width={140} height={140} />
+                  ) : (
+                    <Avatar
+                      alt={userDetails?.data.fullName}
+                      src={`data:image/gif;base64,${userDetails?.data.avatar}`}
+                      sx={{ width: 140, height: 140 }}
+                    />
+                  )}
+                  
+                  {/* Edit Profile Picture Button */}
+                  {!loadingUser && (
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        bottom: 0,
+                        right: 0,
+                        display: "flex",
+                        gap: 0.5,
+                      }}
+                    >
+                      <Tooltip title="Update profile picture">
+                        <IconButton
+                          size="small"
+                          onClick={() => imagePickerRef?.current?.click()}
+                          sx={{
+                            bgcolor: "primary.main",
+                            color: "white",
+                            "&:hover": {
+                              bgcolor: "primary.dark",
+                            },
+                            width: 32,
+                            height: 32,
+                          }}
+                        >
+                          <EditOutlinedIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
+                  )}
+                </Box>
+
+                {loadingUser ? (
+                  <Skeleton width={200} height={40} />
+                ) : (
+                  <Typography variant="h5" fontWeight={600}>
+                    {userDetails?.data.fullName}
+                  </Typography>
+                )}
+              </Stack>
+
+              {/* USER INFO GRID */}
+              <Grid container spacing={3} mt={2}>
+                <Grid item xs={12} md={3}>
+                  <InfoItem
+                    label="First Name"
+                    value={userDetails?.data.firstName}
+                    loading={loadingUser}
+                  />
+                </Grid>
+
+                <Grid item xs={12} md={3}>
+                  <InfoItem
+                    label="Last Name"
+                    value={userDetails?.data.lastName}
+                    loading={loadingUser}
+                  />
+                </Grid>
+
+                <Grid item xs={12} md={3}>
+                  <InfoItem
+                    label="Email"
+                    value={
+                      <AppCopyableText text={String(userDetails?.data.email)} />
+                    }
+                    loading={loadingUser}
+                  />
+                </Grid>
+
+                <Grid item xs={12} md={3}>
+                  <InfoItem
+                    label="Phone"
+                    value={DisplayUtilities.formatPhone(
+                      String(userDetails?.data.phone)
+                    )}
+                    loading={loadingUser}
+                  />
+                </Grid>
+
+                <Grid item xs={12} md={3}>
+                  <InfoItem
+                    label="Locked"
+                    value={DisplayUtilities.formatBoolean(
+                      Boolean(userDetails?.data.isLocked)
+                    )}
+                    loading={loadingUser}
+                  />
+                </Grid>
+
+                <Grid item xs={12} md={3}>
+                  <InfoItem
+                    label="Email Confirmed"
+                    value={DisplayUtilities.formatBoolean(
+                      Boolean(userDetails?.data.emailConfirmed)
+                    )}
+                    loading={loadingUser}
+                  />
+                </Grid>
+
+                <Grid item xs={12} md={3}>
+                  <InfoItem
+                    label="Phone Confirmed"
+                    value={DisplayUtilities.formatBoolean(
+                      Boolean(userDetails?.data.phoneNumberConfirmed)
+                    )}
+                    loading={loadingUser}
+                  />
+                </Grid>
+
+                <Grid item xs={12} md={3}>
+                  <InfoItem
+                    label="Two-factor Enabled"
+                    value={DisplayUtilities.formatBoolean(
+                      Boolean(userDetails?.data.twoFactorEnabled)
+                    )}
+                    loading={loadingUser}
+                  />
+                </Grid>
+
+                <Grid item xs={12} md={3}>
+                  <InfoItem
+                    label="Lockout Probability"
+                    value={userDetails?.data.lockoutProbability}
+                    loading={loadingUser}
+                  />
+                </Grid>
+              </Grid>
+            </CardContent>
+          </AppPaper>
+
+          {/* ---------------- USER ROLES ---------------- */}
+          <Stack>
+            <Typography variant="h6" fontWeight={600} gutterBottom>
+              Roles
+            </Typography>
+
+            {loadingRoles ? (
+              <Skeleton height={200} />
+            ) : (
+              <AppPaper>
+                <CardContent>
+                  {userRoles?.data?.length === 0 ? (
+                    <Typography>No roles assigned.</Typography>
+                  ) : (
+                    <Grid container spacing={2}>
+                      {userRoles?.data.map((r) => (
+                        <Grid item>
+                          <Chip label={r} variant="outlined" />
+                        </Grid>
+                      ))}
+                    </Grid>
+                  )}
+                </CardContent>
+              </AppPaper>
+            )}
+          </Stack>
+
+          {/* ---------------- PERMISSIONS ---------------- */}
+          <Stack>
+            <Typography variant="h6" fontWeight={600} gutterBottom>
+              Permissions
+            </Typography>
+
+            {loadingPermissions ? (
+              <Skeleton height={300} />
+            ) : (
+              <AppPaper>
+                <CardContent>
+                  {userPermissions?.data.length === 0 && (
+                    <Typography>No permissions found.</Typography>
+                  )}
+
+                  {userPermissions?.data.map((group) => (
+                    <Box key={group.name} mb={2}>
+                      <AppAccordion
+                        id={group.name}
+                        showCustomTitle
+                        renderTitle={<Divider>{group.name}</Divider>}
+                        content={
+                          <Grid container spacing={2}>
+                            {group.permissions.map((p) => (
+                              <Grid item xs={12} md={4} key={p}>
+                                <Chip
+                                  label={p}
+                                  variant="outlined"
+                                  onDelete={() => onUserPermissionDelete(p)}
+                                />
+                              </Grid>
+                            ))}
+                          </Grid>
+                        }
+                      />
+                    </Box>
+                  ))}
+                </CardContent>
+              </AppPaper>
+            )}
+          </Stack>
+          
+          {/* Profile Picture Update Modal */}
+          <AppModal
+            modalTitle="Update Profile Picture"
+            show={modalState.visible}
+            okButtonText="Update"
+            handleOk={onProfilePictureConfirmed}
+            handleClose={onCancelUpdateProfilePicture}
+            maxWidth="md"
+          >
+            <Stack>
+              <AppImageCropper
+                ref={photoCropperRef}
+                image={selectedImageBase64}
+              />
+            </Stack>
+          </AppModal>
+        </>
+      }
+    />
+  );
+};
+
+export default ViewUserDetails;

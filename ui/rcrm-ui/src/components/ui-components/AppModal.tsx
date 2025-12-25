@@ -13,7 +13,7 @@ import AppLoader from "./AppLoader";
 type AppModalProps = {
   show: boolean;
   fullScreen?: boolean;
-  handleClose?: () => void;
+  handleClose: () => void; // Required for proper modal behavior
   handleOk?: () => void;
   modalTitle?: string;
   okButtonText?: string;
@@ -23,6 +23,8 @@ type AppModalProps = {
   disableOk?: boolean;
   disableCloseButton?: boolean;
   hideCancelButton?: boolean;
+  hideOkButton?: boolean; // Add option to hide OK button
+  maxWidth?: "xs" | "sm" | "md" | "lg" | "xl" | false;
 };
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -37,85 +39,117 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 export interface DialogTitleProps {
   id: string;
   children?: React.ReactNode;
-  onClose: () => void;
+  onClose?: () => void; // Make optional to match usage
   disableCloseButton?: boolean;
 }
 
 function BootstrapDialogTitle(props: DialogTitleProps) {
-  const { children, onClose, ...other } = props;
+  const { children, onClose, disableCloseButton, ...other } = props;
 
   return (
     <DialogTitle
       sx={{
         m: 0,
         p: 2,
-        borderTop: (theme) =>
-          `8px solid ${
-            theme.palette.mode === "light"
-              ? theme.palette.primary.main // Use primary color for light theme
-              : theme.palette.secondary.main // Use secondary color for dark theme
-          }`,
+        pr: onClose && !disableCloseButton ? 6 : 2, // Add padding for close button
+        borderTop: (theme) => `4px solid ${theme.palette.primary.main}`, // Consistent primary color
+        fontWeight: 600,
       }}
       {...other}
     >
       {children}
-      {onClose ? (
+      {onClose && !disableCloseButton && (
         <IconButton
-          disabled={props.disableCloseButton}
-          aria-label="close"
+          aria-label="Close modal"
           onClick={onClose}
           sx={{
             position: "absolute",
             right: 8,
             top: 8,
             color: (theme) => theme.palette.grey[500],
+            "&:hover": {
+              color: (theme) => theme.palette.grey[700],
+              backgroundColor: (theme) => theme.palette.action.hover,
+            },
           }}
         >
           <CloseIcon />
         </IconButton>
-      ) : null}
+      )}
     </DialogTitle>
   );
 }
 
 export default function AppModal(props: AppModalProps) {
   const { t: commonLocale } = useTranslation();
+
+  // Validate required props
+  if (!props.handleClose) {
+    console.warn("AppModal: handleClose is required for proper modal behavior");
+  }
+
+  const handleBackdropClick = (
+    event: {},
+    reason: "backdropClick" | "escapeKeyDown"
+  ) => {
+    if (reason === "backdropClick" && props.disableActions) {
+      return; // Prevent closing on backdrop click when actions are disabled
+    }
+    props.handleClose?.();
+  };
+
   return (
     <React.Suspense fallback={<AppLoader />}>
       <BootstrapDialog
-        onClose={props?.handleClose}
+        onClose={handleBackdropClick}
         aria-labelledby="customized-dialog-title"
-        open={props?.show}
+        aria-describedby="customized-dialog-content"
+        open={props.show}
         fullScreen={props.fullScreen}
+        maxWidth={props.maxWidth ?? "sm"}
+        fullWidth
       >
         <BootstrapDialogTitle
           id="customized-dialog-title"
           disableCloseButton={props.disableActions || props.disableCloseButton}
-          onClose={props.handleClose as any}
+          onClose={props.handleClose}
         >
           {props.modalTitle}
         </BootstrapDialogTitle>
-        <DialogContent dividers>{props?.children}</DialogContent>
-        <DialogActions>
-          {!props.hideCancelButton && (
-            <Button
-              disabled={props.disableActions || props.disableCancel}
-              onClick={props?.handleClose}
-              variant="outlined"
-            >
-              {commonLocale("cancel")}
-            </Button>
-          )}
+        <DialogContent
+          dividers
+          id="customized-dialog-content"
+          sx={{ minHeight: "100px" }} // Ensure minimum content area
+        >
+          {props.children}
+        </DialogContent>
+        {(!props.hideCancelButton ||
+          (!props.hideOkButton && props.handleOk)) && (
+          <DialogActions sx={{ gap: 1, p: 2 }}>
+            {!props.hideCancelButton && (
+              <Button
+                disabled={props.disableActions || props.disableCancel}
+                onClick={props.handleClose}
+                variant="outlined"
+                size="medium"
+              >
+                {commonLocale("cancel")}
+              </Button>
+            )}
 
-          <Button
-            disabled={props.disableActions || props.disableOk}
-            variant="contained"
-            autoFocus
-            onClick={props?.handleOk}
-          >
-            {props?.okButtonText ?? "OK"}
-          </Button>
-        </DialogActions>
+            {!props.hideOkButton && props.handleOk && (
+              <Button
+                disabled={props.disableActions || props.disableOk}
+                variant="contained"
+                autoFocus
+                onClick={props.handleOk}
+                size="medium"
+              >
+                {props.okButtonText ?? "OK"}
+              </Button>
+            )}
+          </DialogActions>
+        )}
       </BootstrapDialog>
     </React.Suspense>
   );

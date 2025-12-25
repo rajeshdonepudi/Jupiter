@@ -28,6 +28,9 @@ export const authSlice = createSlice({
       state.isAuthenticated = false;
       state.accessToken = "";
     },
+    updateProfilePicture: (state, action) => {
+      state.profilePicture = action.payload.profilePicture;
+    },
     tokenReceived: (state, action) => {
       state.accessToken = action.payload.jwtToken;
       state.refreshToken = action.payload.refreshToken;
@@ -35,6 +38,7 @@ export const authSlice = createSlice({
   },
 });
 
-export const { login, logout, tokenReceived } = authSlice.actions;
+export const { login, logout, tokenReceived, updateProfilePicture } =
+  authSlice.actions;
 export default authSlice.reducer;
 export const selectAuth = (state: { auth: any }) => state.auth;
