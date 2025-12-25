@@ -4,6 +4,8 @@ export interface Question {
   id: string | null;
   type: QuestionTypeEnum;
   name: string;
+  questionTypeName?: string;
+  resourceAlias?: string;
   options?: QuestionOption[];
 }
 

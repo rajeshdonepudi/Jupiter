@@ -8,8 +8,6 @@ namespace Jupiter.Models.EntityConfiguration.QuestionAndAnswer
     {
         public void Configure(EntityTypeBuilder<QuestionBank> builder)
         {
-            builder.ToTable("QuestionBanks");
-
             builder.HasKey(x => x.Id);
 
             builder.Property(x => x.Name).IsRequired().HasMaxLength(250);
