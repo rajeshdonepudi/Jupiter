@@ -26,16 +26,47 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import AppConstants from "@/constants/constants";
+import AddQuestionForm from "./AddQuestionForm";
+import AppModal from "@/components/ui-components/AppModal";
+import { useUpsertQuestionMutation } from "@/services/QuestionsAndAnswers/QuestionService";
+import { useRef } from "react";
+import AddIcon from "@mui/icons-material/Add";
 
 const ManageQuestionBankForm = (props: any) => {
-    const { data: questionsResponse } = useGetAllQuestionsQuery({
+    const { data: questionsResponse, isLoading, error } = useGetAllQuestionsQuery({
         page: 1,
         pageSize: 1000,
     });
 
-    const allQuestions = useMemo(() => questionsResponse?.data.items ?? [], [questionsResponse]);
+    console.log('Questions Response:', questionsResponse);
+    console.log('Is Loading:', isLoading);
+    console.log('Error:', error);
+
+    const allQuestions = useMemo(() => {
+        const items = questionsResponse?.data?.items ?? [];
+        console.log('All Questions:', items);
+        return items;
+    }, [questionsResponse]);
 
     const [selectedQuestionToAdd, setSelectedQuestionToAdd] = useState<string>("");
+    const [isCreateQuestionModalOpen, setIsCreateQuestionModalOpen] = useState(false);
+    const [upsertQuestion, { isLoading: isSavingQuestion }] = useUpsertQuestionMutation();
+    const questionFormRef = useRef<any>(null);
+
+    const handleCreateQuestion = async (questionData: Question) => {
+        try {
+            const result = await upsertQuestion(questionData).unwrap();
+            if (result.data) {
+                // Close modal
+                setIsCreateQuestionModalOpen(false);
+                // Reset form
+                questionFormRef.current?.resetForm();
+                // The question will automatically appear in the dropdown due to cache invalidation
+            }
+        } catch (error) {
+            console.error('Failed to create question:', error);
+        }
+    };
 
     const formik = useFormik<QuestionBank>({
         initialValues: {
@@ -138,8 +169,15 @@ const ManageQuestionBankForm = (props: any) => {
                                     label="Select Question to Add"
                                     value={selectedQuestionToAdd}
                                     onChange={(e) => setSelectedQuestionToAdd(e.target.value)}
+                                    disabled={isLoading}
                                 >
-                                    {allQuestions
+                                    {isLoading && (
+                                        <MenuItem disabled>Loading questions...</MenuItem>
+                                    )}
+                                    {!isLoading && allQuestions.length === 0 && (
+                                        <MenuItem disabled>No questions available</MenuItem>
+                                    )}
+                                    {!isLoading && allQuestions
                                         .filter(q => !formik.values.questions.some(bq => bq.questionId === q.id))
                                         .map((q) => (
                                             <MenuItem key={q.id} value={q.id ?? ""}>
@@ -148,8 +186,16 @@ const ManageQuestionBankForm = (props: any) => {
                                         ))}
                                 </Select>
                             </FormControl>
-                            <Button variant="contained" onClick={handleAddQuestion} disabled={!selectedQuestionToAdd}>
+                            <Button variant="contained" onClick={handleAddQuestion} disabled={!selectedQuestionToAdd || isLoading}>
                                 Add
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                startIcon={<AddIcon />}
+                                onClick={() => setIsCreateQuestionModalOpen(true)}
+                                disabled={isLoading}
+                            >
+                                Create New Question
                             </Button>
                         </Stack>
 
@@ -179,6 +225,24 @@ const ManageQuestionBankForm = (props: any) => {
                     </Paper>
                 </Grid>
             </Grid>
+
+            {/* Nested Modal for Creating New Question */}
+            <AppModal
+                show={isCreateQuestionModalOpen}
+                modalTitle="Create New Question"
+                handleClose={() => {
+                    setIsCreateQuestionModalOpen(false);
+                    questionFormRef.current?.resetForm();
+                }}
+                handleOk={() => questionFormRef.current?.submitForm()}
+                okButtonText="Create Question"
+                disableOk={isSavingQuestion}
+            >
+                <AddQuestionForm
+                    formikRef={questionFormRef}
+                    onSubmit={handleCreateQuestion}
+                />
+            </AppModal>
         </form>
     );
 };

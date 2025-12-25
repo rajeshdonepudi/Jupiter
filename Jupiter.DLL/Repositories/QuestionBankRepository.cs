@@ -24,11 +24,7 @@ namespace Jupiter.DAL.Repositories
                 query = query.Where(x => x.Name.Contains(model.SearchTerm));
             }
 
-            var count = await query.CountAsync(cancellationToken);
-
             var items = await query
-                .Skip((model.Page - 1) * model.PageSize)
-                .Take(model.PageSize)
                 .Select(x => new QuestionBankListDto
                 {
                     Id = x.Id,
@@ -36,7 +32,7 @@ namespace Jupiter.DAL.Repositories
                     Description = x.Description,
                     QuestionCount = x.Questions.Count
                 })
-                .ToPagedListAsync(model,cancellationToken);
+                .ToPagedListAsync(model, cancellationToken);
 
             return items;
         }

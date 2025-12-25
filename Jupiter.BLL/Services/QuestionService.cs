@@ -69,16 +69,20 @@ namespace Jupiter.BLL.Services
                         var newOption = new QuestionOption
                         {
                             QuestionId = question.Id,
+                            Name = modelOption.Name,
                             Value = modelOption.Value,
                             CreatedOn = DateTime.UtcNow,
+                            CreatedByUserId = USER_ID,
                         };
                         question.Options.Add(newOption);
                     }
                     else
                     {
                         // Update existing option
+                        existingOption.Name = modelOption.Name;
                         existingOption.Value = modelOption.Value;
                         existingOption.ModifiedOn = DateTime.UtcNow;
+                        existingOption.LastUpdatedByUserId = USER_ID;
                     }
                 }
 
@@ -105,7 +109,23 @@ namespace Jupiter.BLL.Services
         {
             var question = await _unitOfWork.QuestionRepository.FindAsync(questionId, cancellationToken);
 
-            _unitOfWork.QuestionRepository.Remove(question);
+            if (question == null)
+            {
+                throw new BusinessException(ErrorMessages.SOMETHING_WENT_WRONG);
+            }
+
+            // Soft delete the question
+            question.IsDeleted = true;
+            question.DeletedOn = DateTime.UtcNow;
+            question.DeletedByUserId = USER_ID;
+
+            // Soft delete all related options
+            foreach (var option in question.Options)
+            {
+                option.IsDeleted = true;
+                option.DeletedOn = DateTime.UtcNow;
+                option.DeletedByUserId = USER_ID;
+            }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }

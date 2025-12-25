@@ -21,7 +21,13 @@ namespace Jupiter.DAL.Repositories
                 Id = x.Id,
                 Name = x.Name,
                 Type = x.Type,
-                QuestionTypeName = x.Type.GetDisplayName()!
+                QuestionTypeName = x.Type.GetDisplayName()!,
+                Options = x.Options.Select(o => new QuestionOptionDto
+                {
+                    Id = o.Id,
+                    Name = o.Name,
+                    Value = o.Value
+                }).ToList()
             }).ToPagedListAsync(model, cancellationToken);
 
             return result;

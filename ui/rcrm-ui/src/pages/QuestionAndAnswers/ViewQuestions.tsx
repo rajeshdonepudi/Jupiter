@@ -61,7 +61,12 @@ const ViewQuestions = () => {
     });
     setTimeout(() => {
       if (formikRef.current) {
-        formikRef.current.setValues(rowData);
+        // Ensure options is always an array to prevent rendering issues
+        const normalizedData = {
+          ...rowData,
+          options: rowData.options ?? [],
+        };
+        formikRef.current.setValues(normalizedData);
       }
     }, 100);
   }, [commonLocale]);
@@ -283,7 +288,7 @@ const ViewQuestions = () => {
               isFetching={isFetching}
               paginationState={questionFilterState}
               setPaginationState={setQuestionFilterState}
-              setRowId={(row) => row.id}
+              getRowId={(row: Question) => row.id ?? ""}
               disableRowSelectionOnClick={true}
               selectedRows={selectedAction.questions}
               onRowSelectionModelChange={onQuestionSelected}
