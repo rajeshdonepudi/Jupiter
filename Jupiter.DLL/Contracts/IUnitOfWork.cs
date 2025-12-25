@@ -19,6 +19,7 @@ namespace Jupiter.DAL.Contracts
         IUserRepository UserRepository { get; }
         ITenantRepository TenantRepository { get; }
         IQuestionRepository QuestionRepository { get; }
+        IQuestionBankRepository QuestionBankRepository { get; }
         IExpenseRepository ExpenseRepository { get; }
         IExpenseCategoryRepository ExpenseCategoryRepository { get; }
 

@@ -17,6 +17,7 @@ import { permissionsAPI } from "@/services/Security/PermissionService";
 import { securityGroupsAPI } from "@/services/Security/SecurityGroupService";
 import { domainServiceAPI } from "@/services/Domain/DomainService";
 import { questionsAPI } from "@/services/QuestionsAndAnswers/QuestionService";
+import { questionBanksAPI } from "@/services/QuestionsAndAnswers/QuestionBankService";
 import { mailReaderAPI } from "@/services/Mail/MailReaderService";
 import { expenseServiceAPI } from "@/services/ExpenseManagement/ExpenseService";
 import { expenseCategoryServiceAPI } from "@/services/ExpenseManagement/ExpenseCategoryService";
@@ -39,6 +40,7 @@ const rootReducer = combineReducers({
   [expenseServiceAPI.reducerPath]: expenseServiceAPI.reducer,
   [mailReaderAPI.reducerPath]: mailReaderAPI.reducer,
   [expenseCategoryServiceAPI.reducerPath]: expenseCategoryServiceAPI.reducer,
+  [questionBanksAPI.reducerPath]: questionBanksAPI.reducer,
   auth: authSlice.reducer,
   theme: themeSlice.reducer,
   tenant: tenantSlice.reducer,

@@ -24,6 +24,7 @@ import { permissionsAPI } from "@/services/Security/PermissionService";
 import { securityGroupsAPI } from "@/services/Security/SecurityGroupService";
 import { domainServiceAPI } from "@/services/Domain/DomainService";
 import { questionsAPI } from "@/services/QuestionsAndAnswers/QuestionService";
+import { questionBanksAPI } from "@/services/QuestionsAndAnswers/QuestionBankService";
 import { mailReaderAPI } from "@/services/Mail/MailReaderService";
 import { expenseServiceAPI } from "@/services/ExpenseManagement/ExpenseService";
 import { expenseCategoryServiceAPI } from "@/services/ExpenseManagement/ExpenseCategoryService";
@@ -60,7 +61,8 @@ export const store = configureStore({
       .concat(questionsAPI.middleware)
       .concat(mailReaderAPI.middleware)
       .concat(expenseServiceAPI.middleware)
-      .concat(expenseCategoryServiceAPI.middleware),
+      .concat(expenseCategoryServiceAPI.middleware)
+      .concat(questionBanksAPI.middleware),
   devTools: true,
 });
 
