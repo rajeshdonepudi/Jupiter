@@ -27,6 +27,7 @@ namespace Jupiter.API.Config
             builder.Services.AddScoped<IPermissionService, PermissionService>();
             builder.Services.AddScoped<ISecurityGroupService, SecurityGroupService>();
             builder.Services.AddScoped<IQuestionService, QuestionService>();
+            builder.Services.AddScoped<IQuestionBankService, QuestionBankService>();
             builder.Services.AddScoped<IExpenseService, ExpenseService>();
             builder.Services.AddScoped<IExpenseCategoryService, ExpenseCategoryService>();
             builder.Services.AddScoped<ITokenValidationService, TokenValidationService>();

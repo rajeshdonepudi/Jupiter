@@ -27,6 +27,7 @@ namespace Jupiter.DAL
             TenantUserRepository = new TenantUserRepository(_context, _memoryCache);
             UserRoleRepository = new UserRoleRepository(_context, _memoryCache);
             QuestionRepository = new QuestionRepository(_context, _memoryCache);
+            QuestionBankRepository = new QuestionBankRepository(_context, _memoryCache);
             TagRepository = new TagRepository(_context, _memoryCache);
             EntityTagRepository = new EntityTagRepository(_context, _memoryCache);
             ExpenseRepository = new ExpenseRepository(_context, _memoryCache);
@@ -52,6 +53,7 @@ namespace Jupiter.DAL
         public IAppThemeRepository AppThemeRepository { get; private set; }
         public ITenantRepository TenantRepository { get; private set; }
         public IQuestionRepository QuestionRepository { get; private set; }
+        public IQuestionBankRepository QuestionBankRepository { get; private set; }
         public IExpenseRepository ExpenseRepository { get; private set; }
         public IExpenseCategoryRepository ExpenseCategoryRepository { get; private set; }
 

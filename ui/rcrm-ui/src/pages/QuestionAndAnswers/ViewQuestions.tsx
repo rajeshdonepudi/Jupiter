@@ -13,6 +13,7 @@ const DeleteOutlineOutlinedIcon = lazy(
 import {
   useGetAllQuestionsQuery,
   useUpsertQuestionMutation,
+  useDeleteQuestionMutation,
 } from "@/services/QuestionsAndAnswers/QuestionService";
 import { FilterQuestions } from "@/models/QuestionAndAnswer/FilterQuestionModel";
 import {
@@ -50,9 +51,106 @@ const ViewQuestions = () => {
 
   const [upsertQuestion, { isLoading }] = useUpsertQuestionMutation();
 
-  const onEditQuestionClicked = useCallback((rowData: Question) => {}, []);
+  const onEditQuestionClicked = useCallback((rowData: Question) => {
+    setPageActionsState({
+      actionId: QuestionActionsEnum.UpdateQuestion,
+      title: "Edit Question",
+      data: rowData,
+      visible: true,
+      okButtonText: commonLocale("save"),
+    });
+    setTimeout(() => {
+      if (formikRef.current) {
+        formikRef.current.setValues(rowData);
+      }
+    }, 100);
+  }, [commonLocale]);
 
-  const onDeleteQuestionClicked = useCallback((rowData: Question) => {}, []);
+  const onDeleteQuestionClicked = useCallback((rowData: Question) => {
+    setPageActionsState({
+      actionId: QuestionActionsEnum.DeleteQuestion,
+      title: "Delete Question",
+      data: rowData,
+      visible: true,
+      okButtonText: commonLocale("delete"),
+    });
+  }, [commonLocale]);
+
+  // ... (columns definition remains same, but using these callbacks)
+
+  // ... (questionsList memo remains same)
+
+  // Remove unused selectedAction state if not needed, or keep for batch actions.
+
+  // ... (onQuestionSelected remains)
+
+  const [pageActionsState, setPageActionsState] = useState<AppModalState>({
+    visible: false,
+    title: undefined,
+    actionId: 0,
+    data: undefined,
+    okButtonText: undefined,
+  });
+
+  const [deleteQuestion, { isLoading: isDeleting }] = useDeleteQuestionMutation();
+
+  const handleModalClose = () => {
+    formikRef?.current?.resetForm();
+    setPageActionsState((prev: AppModalState) => ({
+      ...prev,
+      visible: false,
+      data: {},
+      title: undefined,
+      okButtonText: undefined,
+      actionId: 0,
+    }));
+  };
+
+  const showMessage = (msg: string) => {
+    toast.success(msg);
+  };
+
+  const onClickAddQuestion = () => {
+    setPageActionsState({
+      actionId: QuestionActionsEnum.AddQuestion,
+      title: `Add Question`,
+      data: {},
+      visible: true,
+      okButtonText: commonLocale("add"),
+    });
+  };
+
+  const handleOk = async () => {
+    switch (pageActionsState.actionId) {
+      case QuestionActionsEnum.AddQuestion:
+      case QuestionActionsEnum.UpdateQuestion:
+        formikRef?.current?.submitForm();
+        break;
+      case QuestionActionsEnum.DeleteQuestion:
+        if (pageActionsState.data?.id) {
+          try {
+            await deleteQuestion(pageActionsState.data.id).unwrap();
+            showMessage("Question deleted successfully");
+            handleModalClose();
+          } catch (e) {
+            toast.error("Failed to delete question");
+          }
+        }
+        break;
+    }
+  };
+
+  const handleSubmit = (values: Question) => {
+    upsertQuestion(values)
+      .unwrap()
+      .then(() => {
+        showMessage(values.id ? "Question updated successfully" : "Question added successfully");
+        handleModalClose();
+      })
+      .catch((err) => {
+        toast.error("Failed to save question");
+      });
+  };
 
   const columns = useMemo(() => {
     const columns: GridColDef[] = [
@@ -110,7 +208,7 @@ const ViewQuestions = () => {
               <Tooltip title="Delete Question">
                 <IconButton
                   onClick={() =>
-                    onDeleteQuestionClicked(params.row.resourceAlias)
+                    onDeleteQuestionClicked(params.row)
                   }
                   aria-label="Example"
                 >
@@ -161,73 +259,13 @@ const ViewQuestions = () => {
     });
   };
 
-  const [pageActionsState, setPageActionsState] = useState<AppModalState>({
-    visible: false,
-    title: undefined,
-    actionId: 0,
-    data: undefined,
-    okButtonText: undefined,
-  });
 
-  const handleModalClose = () => {
-    formikRef?.current?.resetForm();
-    setPageActionsState((prev: AppModalState) => {
-      return {
-        ...prev,
-        visible: false,
-        data: {},
-        title: undefined,
-        okButtonText: undefined,
-        actionId: 0,
-      };
-    });
-  };
 
-  const showMessage = () => {
-    switch (pageActionsState.actionId) {
-      case QuestionActionsEnum.AddQuestion:
-        toast("Question added successfully.");
-        break;
-      case QuestionActionsEnum.UpdateQuestion:
-        toast("Question updated successfully.");
-        break;
-      case QuestionActionsEnum.DeleteQuestion:
-        toast("Question deleted successfully");
-        break;
-    }
-  };
 
-  const onClickAddQuestion = () => {
-    setPageActionsState({
-      actionId: QuestionActionsEnum.AddQuestion,
-      title: `Add Question`,
-      data: {},
-      visible: true,
-      okButtonText: commonLocale("add"),
-    });
-  };
 
-  const handleOk = () => {
-    switch (pageActionsState.actionId) {
-      case QuestionActionsEnum.AddQuestion:
-      case QuestionActionsEnum.UpdateQuestion:
-        formikRef?.current?.submitForm();
-        break;
-      case QuestionActionsEnum.DeleteQuestion:
-        break;
-    }
-  };
 
-  const handleSubmit = (values: Question) => {
-    upsertQuestion(values)
-      .unwrap()
-      .then(() => {
-        showMessage();
-      })
-      .then(() => {
-        handleModalClose();
-      });
-  };
+
+
 
   return (
     <>

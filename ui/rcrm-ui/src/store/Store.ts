@@ -56,7 +56,8 @@ export const store = configureStore({
       .concat(domainServiceAPI.middleware)
       .concat(questionsAPI.middleware)
       .concat(expenseServiceAPI.middleware)
-      .concat(expenseCategoryServiceAPI.middleware),
+      .concat(expenseCategoryServiceAPI.middleware)
+      .concat(questionBanksAPI.middleware),
   devTools: true,
 });
 

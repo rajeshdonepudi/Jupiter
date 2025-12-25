@@ -57,6 +57,9 @@ namespace Jupiter.DAL
         public DbSet<QuestionOption> QuestionOptions { get; set; }
         public DbSet<Answer> Answers { get; set; }
 
+        public DbSet<QuestionBank> QuestionBanks { get; set; }
+        public DbSet<QuestionBankQuestion> QuestionBankQuestions { get; set; }
+
         #endregion
 
         #region Expense Managment

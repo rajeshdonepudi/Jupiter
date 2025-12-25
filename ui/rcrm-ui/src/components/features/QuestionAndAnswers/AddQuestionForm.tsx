@@ -103,65 +103,67 @@ const AddQuestionForm = (props: any) => {
         </Grid>
 
         {(formik.values.type === QuestionTypeEnum.SingleSelectDropdown ||
-          formik.values.type === QuestionTypeEnum.MultiSelectDropdown) && (
-          <Grid md={12}>
-            <Paper variant="outlined" sx={{ padding: "1rem" }}>
-              <Stack gap={1}>
-                <Stack
-                  direction={"row"}
-                  alignItems={"center"}
-                  justifyContent={"space-between"}
-                >
-                  <Typography variant="h6">Options</Typography>
-                  <Button
-                    variant="outlined"
-                    startIcon={<AddIcon />}
-                    onClick={addOption}
+          formik.values.type === QuestionTypeEnum.MultiSelectDropdown ||
+          formik.values.type === QuestionTypeEnum.RadioGroup ||
+          formik.values.type === QuestionTypeEnum.CheckboxList) && (
+            <Grid md={12}>
+              <Paper variant="outlined" sx={{ padding: "1rem" }}>
+                <Stack gap={1}>
+                  <Stack
+                    direction={"row"}
+                    alignItems={"center"}
+                    justifyContent={"space-between"}
                   >
-                    Add Option
-                  </Button>
-                </Stack>
-                {Array.from(formik?.values?.options ?? []).length > 0 ? (
-                  formik.values.options?.map((option, index) => (
-                    <Stack key={index} direction={"row"} gap={1}>
-                      <TextField
-                        fullWidth
-                        id={`option-name-${index}`}
-                        label="Name"
-                        placeholder="Enter option name..."
-                        variant="outlined"
-                        value={option.name}
-                        onChange={(e) =>
-                          updateOption(index, "name", e.target.value)
-                        }
-                      />
-                      <TextField
-                        fullWidth
-                        id={`option-value-${index}`}
-                        placeholder="Enter value..."
-                        label="Value"
-                        variant="outlined"
-                        value={option.value}
-                        onChange={(e) =>
-                          updateOption(index, "value", e.target.value)
-                        }
-                      />
+                    <Typography variant="h6">Options</Typography>
+                    <Button
+                      variant="outlined"
+                      startIcon={<AddIcon />}
+                      onClick={addOption}
+                    >
+                      Add Option
+                    </Button>
+                  </Stack>
+                  {Array.from(formik?.values?.options ?? []).length > 0 ? (
+                    formik.values.options?.map((option, index) => (
+                      <Stack key={index} direction={"row"} gap={1}>
+                        <TextField
+                          fullWidth
+                          id={`option-name-${index}`}
+                          label="Name"
+                          placeholder="Enter option name..."
+                          variant="outlined"
+                          value={option.name}
+                          onChange={(e) =>
+                            updateOption(index, "name", e.target.value)
+                          }
+                        />
+                        <TextField
+                          fullWidth
+                          id={`option-value-${index}`}
+                          placeholder="Enter value..."
+                          label="Value"
+                          variant="outlined"
+                          value={option.value}
+                          onChange={(e) =>
+                            updateOption(index, "value", e.target.value)
+                          }
+                        />
 
-                      <IconButton
-                        aria-label="delete"
-                        onClick={() => removeOption(index)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Stack>
-                  ))
-                ) : (
-                  <Stack alignItems={"center"}>No options added.</Stack>
-                )}
-              </Stack>
-            </Paper>
-          </Grid>
-        )}
+                        <IconButton
+                          aria-label="delete"
+                          onClick={() => removeOption(index)}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </Stack>
+                    ))
+                  ) : (
+                    <Stack alignItems={"center"}>No options added.</Stack>
+                  )}
+                </Stack>
+              </Paper>
+            </Grid>
+          )}
       </Grid>
     </form>
   );

@@ -36,6 +36,7 @@ const rootReducer = combineReducers({
   [domainServiceAPI.reducerPath]: domainServiceAPI.reducer,
   [expenseServiceAPI.reducerPath]: expenseServiceAPI.reducer,
   [expenseCategoryServiceAPI.reducerPath]: expenseCategoryServiceAPI.reducer,
+  [questionBanksAPI.reducerPath]: questionBanksAPI.reducer,
   auth: authSlice.reducer,
   theme: themeSlice.reducer,
   tenant: tenantSlice.reducer,
