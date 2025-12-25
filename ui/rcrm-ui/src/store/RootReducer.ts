@@ -16,6 +16,7 @@ import { permissionsAPI } from "@/services/Security/PermissionService";
 import { securityGroupsAPI } from "@/services/Security/SecurityGroupService";
 import { domainServiceAPI } from "@/services/Domain/DomainService";
 import { questionsAPI } from "@/services/QuestionsAndAnswers/QuestionService";
+import { questionBanksAPI } from "@/services/QuestionsAndAnswers/QuestionBankService";
 import { expenseServiceAPI } from "@/services/ExpenseManagement/ExpenseService";
 import { expenseCategoryServiceAPI } from "@/services/ExpenseManagement/ExpenseCategoryService";
 
@@ -28,7 +29,6 @@ const rootReducer = combineReducers({
   [rolesAPI.reducerPath]: rolesAPI.reducer,
   [landingPageAPI.reducerPath]: landingPageAPI.reducer,
   [logsAPI.reducerPath]: logsAPI.reducer,
-
   [userAPI.reducerPath]: userAPI.reducer,
   [permissionsAPI.reducerPath]: permissionsAPI.reducer,
   [securityGroupsAPI.reducerPath]: securityGroupsAPI.reducer,

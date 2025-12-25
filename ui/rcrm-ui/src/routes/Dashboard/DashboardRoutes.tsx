@@ -22,6 +22,7 @@ import Test from "@/TestComponent/Test";
 import AppPageV2 from "@/components/ui-components/AppPage";
 import { Button } from "@mui/material";
 import ViewQuestions from "@/pages/QuestionAndAnswers/ViewQuestions";
+import QuestionBankList from "@/pages/QuestionAndAnswers/QuestionBankList";
 
 import AppAccessForbidden from "@/components/ui-components/AppAccessForbidden";
 import ViewUserExpenses from "@/pages/ExpenseManagement/ViewUserExpenses";
@@ -90,6 +91,7 @@ const DashboardRoutes = () => {
 
         <Route path="survey">
           <Route path="questions" element={<ViewQuestions />}></Route>
+          <Route path="question-banks" element={<QuestionBankList />}></Route>
         </Route>
         <Route path="expenses">
           <Route index element={<ExpenseDashboard />}></Route>

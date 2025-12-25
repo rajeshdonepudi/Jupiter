@@ -39,7 +39,7 @@ const ManageQuestionBankForm = (props: any) => {
 
     const formik = useFormik<QuestionBank>({
         initialValues: {
-            id: null,
+            id: undefined,
             name: "",
             description: "",
             questions: [],

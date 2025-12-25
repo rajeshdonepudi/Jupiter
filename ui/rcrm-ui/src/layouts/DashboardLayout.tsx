@@ -87,7 +87,7 @@ import lightLogo from "@/assets/logo/falconone-high-resolution-logo-transparent.
 import darkLogo from "@/assets/logo/falconone-high-resolution-logo-transparent_white.png";
 import NavUtilities from "@/utilities/NavUtilities";
 
-export enum FeatureIdentifier {}
+export enum FeatureIdentifier { }
 
 export default function DashboardLayout() {
   /***
@@ -148,6 +148,12 @@ export default function DashboardLayout() {
           displayText: "Questions",
           icon: <QuestionAnswerOutlinedIcon />,
           menuId: 16,
+        },
+        {
+          url: "/secure/survey/question-banks",
+          displayText: "Question Banks",
+          icon: <PollIcon />,
+          menuId: 17,
         },
       ],
     },

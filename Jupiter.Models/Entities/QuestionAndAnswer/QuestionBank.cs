@@ -2,12 +2,15 @@ using Jupiter.Models.Entities.Base;
 using Jupiter.Models.Entities.Tenants;
 using Jupiter.Models.Entities.Users;
 using Jupiter.Models.EntityConfiguration.QuestionAndAnswer;
+using Jupiter.Models.EntityContracts;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Jupiter.Models.Entities.QuestionAndAnswer
 {
     [EntityTypeConfiguration(typeof(QuestionBankEntityTypeConfiguration))]
-    public class QuestionBank : BaseEntity, IMultiTenantEntity, ISoftDeletable
+    [Table("QuestionBanks")]
+    public class QuestionBank : BaseEntity, Jupiter.Models.EntityContracts.IMultiTenantEntity, Jupiter.Models.EntityContracts.ISoftDeletable
     {
         public QuestionBank()
         {

@@ -8,8 +8,6 @@ namespace Jupiter.Models.EntityConfiguration.QuestionAndAnswer
     {
         public void Configure(EntityTypeBuilder<QuestionBankQuestion> builder)
         {
-            builder.ToTable("QuestionBankQuestions");
-
             builder.HasKey(x => new { x.QuestionBankId, x.QuestionId });
 
             builder.HasOne(x => x.QuestionBank)
